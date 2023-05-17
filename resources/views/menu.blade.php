@@ -2,7 +2,15 @@
 
 @section('content')
     <div>
-        <table class="table">
+        <div class="card">
+            <div class="card-header">
+                Menu Management
+            </div>
+            <div class="card-body">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new-menu">New Menu</button>
+            </div>
+        </div>
+        <table class="table mt-3">
             <thead>
             <th scope="col">ID</th>
             <th scope="col">PID</th>
@@ -22,10 +30,10 @@
                     <td>{{$menu->icon}}</td>
                     <td>{{$menu->updated_at}}</td>
                     <td>
-                        <form >
+                        <div >
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmation" onclick="actionHandle({{$menu}},'delete')">Delete</button>
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmation" onclick="actionHandle({{$menu}},'edit')">Edit</button>
-                        </form>
+                        </div>
                     </td>
                 </tr>
             @endforeach
@@ -34,11 +42,48 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="confirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmation" aria-hidden="true">
+    <!-- Form modal for add new data -->
+    <div class="modal fade" id="new-menu" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="confirm_type" class="modal-title" id="staticBackdropLabel"></h5>
+                    <h5 class="modal-title">New Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-menu-form" action="{{route('menu.add')}}" method="POST" onsubmit="addMenuSubmit()">
+                        @csrf
+                        <div>
+                            <label for="new-menu-form-pid">PID</label>
+                            <input class="form-control" type="text" name="new-menu-form-pid" id="new-menu-form-pid">
+                        </div>
+                        <div>
+                            <label for="new-menu-form-name">Name</label>
+                            <input class="form-control" type="text" name="new-menu-form-name" id="new-menu-form-name">
+                        </div>
+                        <div>
+                            <label for="new-menu-form-path">Path</label>
+                            <input class="form-control" type="text" name="new-menu-form-path" id="new-menu-form-path">
+                        </div>
+                        <div>
+                            <label for="new-menu-form-icon">Icon</label>
+                            <input class="form-control" type="text" name="new-menu-form-icon" id="new-menu-form-icon">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addMenuSubmit(event)">Add Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Form modal for update data -->
+    <div class="modal fade" id="confirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="confirm_type" class="modal-title" ></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -49,15 +94,15 @@
                             <input class="form-control" type="text" id="pid" name="pid">
                         </div>
                         <div>
-                            <label for="pid">Name</label>
+                            <label for="name">Name</label>
                             <input class="form-control" type="text" id="name" name="name">
                         </div>
                         <div>
-                            <label for="pid">Path</label>
+                            <label for="path">Path</label>
                             <input class="form-control" type="text" id="path" name="path">
                         </div>
                         <div>
-                            <label for="pid">Icon</label>
+                            <label for="icon">Icon</label>
                             <input class="form-control" type="text" id="icon" name="icon">
                         </div>
                     </form>
@@ -98,24 +143,53 @@
     function confirmHandle(){
         $(document).ready(function () {
             let action = (actionType === 'delete') ? "{{route('menu.delete')}}" : "{{route('menu.edit')}}";
-            formData = {
+            let updateForm = {
                 _token: "{{csrf_token()}}",
                 id: menuData.id,
-                pid: menuData.pid,
-                name: menuData.name,
-                path: menuData.path,
-                icon: menuData.icon,
+                pid: $('#pid').val(),
+                name: $('#name').val(),
+                path: $('#path').val(),
+                icon: $('#icon').val(),
             }
 
            $.ajax({
                url: action,
                method: "POST",
-               data: (action === 'delete') ? {id: menuData.id, _token: "{{csrf_token()}}"} : formData,
+               data: (action === 'delete') ? {id: menuData.id, _token: "{{csrf_token()}}"} : updateForm,
                success: function (response) {
                    window.location.href = "{{route('menu.get')}}";
                }
            })
         });
+    }
+
+    function addMenuSubmit(e) {
+        try{
+            e.preventDefault();
+            $(document).ready(function () {
+                let data = $('#new-menu-form').serializeArray().reduce(function (acc, cur) {
+                    acc[cur.name.replace('new-menu-form-', '')] = cur.value;
+                    return acc;
+                },{});
+                data['_token'] = "{{csrf_token()}}" ;
+
+                $.ajax({
+                    url: "{{route('menu.add')}}",
+                    method: "POST",
+                    data: data,
+                    success: function (response) {
+                        window.location.href = "{{route('menu.get')}}";
+                    },
+                    error: function (response) {
+                        console.log(response)
+                    }
+                })
+            })
+        }
+        catch (e) {
+            console.log(e)
+        }
+
     }
 </script>
 

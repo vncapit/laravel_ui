@@ -23,3 +23,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/menu/get', [App\Http\Controllers\Menu\MenuController::class, 'getMenu'])->name('menu.get');
 Route::post('/menu/delete', [App\Http\Controllers\Menu\MenuController::class, 'deleteMenu'])->name('menu.delete');
 Route::post('/menu/edit', [App\Http\Controllers\Menu\MenuController::class, 'editMenu'])->name('menu.edit');
+Route::post('/menu/add', [App\Http\Controllers\Menu\MenuController::class, 'addMenu'])->name('menu.add');
