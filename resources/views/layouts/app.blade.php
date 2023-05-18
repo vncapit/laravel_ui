@@ -80,14 +80,10 @@
              <div class="row justify-content-center">
                   <div class="side-menu-container col-md-2">
                        <ul class="nav navbar-nav">
-                           <li><a href="/">Dashboard</a></li>
-                           <li>
-                               <a data-bs-toggle="collapse" aria-expanded="false" aria-controls="dropdown-menu" href="#dropdown-menu">Menu</a>
-                               <ul id="dropdown-menu" class="collapse">
-                                   <li><a href="{{route('menu.get')}}">Menu Management</a></li>
-                                   <li><a href="#">Menu View</a></li>
-                               </ul>
-                           </li>
+                           @php
+                               $menus = app(\App\Modules\Menu\MenuService::class)->menuGroup();
+                                echo $menus;
+                           @endphp
                       </ul>
                   </div>
                  <div class="col-md-10">
@@ -105,5 +101,3 @@
     }
 </style>
 </html>
-
-

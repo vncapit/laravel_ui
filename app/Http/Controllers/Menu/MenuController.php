@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Menu;
 
 use App\Http\Controllers\Controller;
 use App\Models\Menu;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -18,6 +19,7 @@ class MenuController extends Controller
         $menus = Menu::all();
         return view('menu', ['menus' => $menus] );
     }
+
 
     public function deleteMenu(Request $request)
     {
@@ -69,4 +71,6 @@ class MenuController extends Controller
             \Log::info('err', [$exception]);
         }
     }
+
+
 }
